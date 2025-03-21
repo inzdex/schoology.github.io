@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple 3D Platformer Layout</title>
+    <title>Simple 3D Platformer Control with WASD</title>
     <style>
         body {
             margin: 0;
@@ -62,7 +62,41 @@
         <div class="platform platform1"></div>
         <div class="platform platform2"></div>
         <div class="platform platform3"></div>
-        <div class="player"></div>
+        <div class="player" id="player"></div>
     </div>
+
+    <script>
+        const player = document.getElementById('player');
+        let playerPosition = { x: 50, y: 70 }; // Initial position
+
+        document.addEventListener('keydown', (event) => {
+            const step = 5; // Number of pixels to move
+
+            switch (event.code) {
+                case 'KeyW': // Move up
+                    playerPosition.y -= step;
+                    break;
+                case 'KeyS': // Move down
+                    playerPosition.y += step;
+                    break;
+                case 'KeyA': // Move left
+                    playerPosition.x -= step;
+                    break;
+                case 'KeyD': // Move right
+                    playerPosition.x += step;
+                    break;
+            }
+
+            // Update player position
+            player.style.left = playerPosition.x + 'px';
+            player.style.bottom = playerPosition.y + 'px';
+
+            // Prevent player from going off the game area
+            if (playerPosition.x < 0) playerPosition.x = 0;
+            if (playerPosition.x > 560) playerPosition.x = 560; // 600 - player width
+            if (playerPosition.y < 0) playerPosition.y = 0;
+            if (playerPosition.y > 350) playerPosition.y = 350; // 400 - player height
+        });
+    </script>
 </body>
 </html>
