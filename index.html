@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple 3D Platformer Control with WASD</title>
+    <title>3D Platformer with Gravity & Jump</title>
     <style>
         body {
             margin: 0;
@@ -20,7 +20,6 @@
             height: 400px;
             border: 2px solid #000; /* Game area border */
             overflow: hidden; /* Prevent overflow */
-            perspective: 1000px; /* Create 3D effect */
         }
 
         .platform {
@@ -33,14 +32,14 @@
 
         .player {
             position: absolute;
-            bottom: 70px; /* Height over the platform */
             left: 50px; /* Initial position */
             width: 40px;
             height: 40px;
             background-color: #ff0000; /* Red player */
             border-radius: 50%; /* Circular shape */
+            transition: bottom 0.1s; /* Smooth bottom transitions */
         }
-
+        
         /* Platforms at different heights */
         .platform1 {
             left: 0px; /* Left platform */
@@ -67,36 +66,75 @@
 
     <script>
         const player = document.getElementById('player');
+        const platforms = document.querySelectorAll('.platform');
         let playerPosition = { x: 50, y: 70 }; // Initial position
+        let playerVelocity = { x: 0, y: 0 }; // Initial velocity
+        let gravity = -0.5; // Gravity value
+        let isJumping = false;
 
         document.addEventListener('keydown', (event) => {
             const step = 5; // Number of pixels to move
 
             switch (event.code) {
-                case 'KeyW': // Move up
-                    playerPosition.y -= step;
-                    break;
-                case 'KeyS': // Move down
-                    playerPosition.y += step;
-                    break;
                 case 'KeyA': // Move left
                     playerPosition.x -= step;
                     break;
                 case 'KeyD': // Move right
                     playerPosition.x += step;
                     break;
+                case 'KeyW': // Jump
+                    if (!isJumping) {
+                        playerVelocity.y = 10; // Jump force
+                        isJumping = true;
+                    }
+                    break;
             }
 
             // Update player position
+            playerPosition.x = Math.max(0, Math.min(playerPosition.x, 560)); // Keep player within bounds (600 - player width)
             player.style.left = playerPosition.x + 'px';
-            player.style.bottom = playerPosition.y + 'px';
-
-            // Prevent player from going off the game area
-            if (playerPosition.x < 0) playerPosition.x = 0;
-            if (playerPosition.x > 560) playerPosition.x = 560; // 600 - player width
-            if (playerPosition.y < 0) playerPosition.y = 0;
-            if (playerPosition.y > 350) playerPosition.y = 350; // 400 - player height
         });
+
+        function update() {
+            // Apply gravity
+            playerVelocity.y += gravity;
+            playerPosition.y += playerVelocity.y;
+
+            // Collision detection with platforms
+            let onGround = false;
+            platforms.forEach(platform => {
+                const platformRect = platform.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+
+                if (
+                    playerRect.bottom >= platformRect.top && 
+                    playerRect.right > platformRect.left && 
+                    playerRect.left < platformRect.right
+                ) {
+                    onGround = true; // Player is on the ground
+                    playerPosition.y = platformRect.top - playerRect.height; // Position player on top of the platform
+                    isJumping = false; // Player is not jumping
+                    playerVelocity.y = 0; // Reset vertical velocity
+                }
+            });
+
+            // Prevent player from falling below the game area
+            if (playerPosition.y < 0) {
+                playerPosition.y = 0; // Reset to ground
+                playerVelocity.y = 0; // Stop falling
+                isJumping = false; // Not jumping
+            }
+
+            // Update player style
+            player.style.bottom = playerPosition.y + 'px';
+        }
+
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop); // Repeat the game loop
+        }
+
+        gameLoop(); // Start the game loop
     </script>
 </body>
 </html>
