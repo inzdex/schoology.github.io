@@ -1,1 +1,109 @@
-//this is a test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purple Themed Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8; /* Light background for contrast */
+            color: #333; /* Dark text for readability */
+        }
+
+        header {
+            background-color: #6a0dad; /* Purple header */
+            color: white; 
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #836fff; /* Lighter purple for navigation */
+            padding: 15px;
+        }
+
+        nav a {
+            color: white; 
+            text-decoration: none; 
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        main {
+            padding: 20px;
+            max-width: 900px; /* Constraints on width for better readability */
+            margin: auto; /* Centers the main content */
+            background-color: white; /* White background for the main content */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #6a0dad; /* Same color as header */
+            color: white; 
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column; /* Vertical on mobile */
+            }
+            nav a {
+                margin: 10px 0; /* Space out links vertically */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to My Purple Website</h1>
+    <p>Your go-to hub for all things programming and design.</p>
+</header>
+
+<nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<main>
+    <section id="home">
+        <h2>Home</h2>
+        <p>This is a modern-designed homepage with a focus on a clean user experience.</p>
+    </section>
+
+    <section id="about">
+        <h2>About Us</h2>
+        <p>We are committed to delivering high-quality content and services.</p>
+    </section>
+
+    <section id="services">
+        <h2>Our Services</h2>
+        <p>Explore our range of services designed to meet your needs.</p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <p>Get in touch with us for any inquiries or support.</p>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2023 Purple Themed Website. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
