@@ -3,151 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Snake Game</title>
+    <title>3D Platformer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon-es/0.18.1/cannon-es.min.js"></script>
     <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            color: #333;
-        }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.5rem;
-        }
-
-        canvas {
-            background: #222;
-            display: block;
-            margin: auto;
-            border-radius: 10px;
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 10px;
-            background: #ff477e;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #ff2a68;
-        }
+        body { margin: 0; overflow: hidden; }
     </style>
 </head>
 <body>
-    <h1>Snake Game</h1>
-    <p>Score: <span id="score">0</span></p>
-    <canvas id="gameCanvas"></canvas>
-    <button id="resetButton">Reset</button>
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const scoreDisplay = document.getElementById("score");
-        const resetButton = document.getElementById("resetButton");
+<script>
+    // Scene, Camera, and Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-        canvas.width = 400;
-        canvas.height = 400;
+    // Physics World
+    const world = new CANNON.World();
+    world.gravity.set(0, -9.82, 0); 
 
-        const boxSize = 20;
-        let snake = [{ x: 200, y: 200 }];
-        let direction = { x: 0, y: 0 };
-        let food = { x: 0, y: 0 };
-        let score = 0;
+    // Player
+    const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const playerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const playerMesh = new THREE.Mesh(playerGeometry, playerMaterial);
+    scene.add(playerMesh);
 
-        function getRandomPosition() {
-            return Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize;
+    const playerBody = new CANNON.Body({
+        mass: 1,
+        shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
+        position: new CANNON.Vec3(0, 5, 0)
+    });
+    world.addBody(playerBody);
+
+    // Ground
+    const groundGeometry = new THREE.BoxGeometry(10, 1, 10);
+    const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    scene.add(groundMesh);
+
+    const groundBody = new CANNON.Body({
+        mass: 0,
+        shape: new CANNON.Box(new CANNON.Vec3(5, 0.5, 5)),
+        position: new CANNON.Vec3(0, -0.5, 0)
+    });
+    world.addBody(groundBody);
+
+    // Controls
+    const keys = {};
+    document.addEventListener("keydown", (event) => keys[event.code] = true);
+    document.addEventListener("keyup", (event) => keys[event.code] = false);
+
+    // Movement Variables
+    const speed = 5;
+    let canJump = false;
+
+    playerBody.addEventListener("collide", (event) => {
+        if (event.body === groundBody) canJump = true;
+    });
+
+    // Game Loop
+    function animate() {
+        requestAnimationFrame(animate);
+        world.step(1 / 60);
+
+        // Movement
+        const moveDirection = new CANNON.Vec3(0, 0, 0);
+        if (keys["KeyW"]) moveDirection.z -= speed;
+        if (keys["KeyS"]) moveDirection.z += speed;
+        if (keys["KeyA"]) moveDirection.x -= speed;
+        if (keys["KeyD"]) moveDirection.x += speed;
+        if (keys["Space"] && canJump) {
+            playerBody.velocity.y = 5;
+            canJump = false;
         }
 
-        function placeFood() {
-            food.x = getRandomPosition();
-            food.y = getRandomPosition();
-        }
-        placeFood();
+        playerBody.velocity.x = moveDirection.x;
+        playerBody.velocity.z = moveDirection.z;
 
-        function update() {
-            let head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+        // Update Player Mesh
+        playerMesh.position.copy(playerBody.position);
 
-            // Check collision with walls or self
-            if (
-                head.x < 0 || head.x >= canvas.width ||
-                head.y < 0 || head.y >= canvas.height ||
-                snake.some(segment => segment.x === head.x && segment.y === head.y)
-            ) {
-                resetGame();
-                return;
-            }
+        renderer.render(scene, camera);
+    }
 
-            snake.unshift(head);
+    animate();
+</script>
 
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                scoreDisplay.textContent = score;
-                placeFood();
-            } else {
-                snake.pop();
-            }
-        }
-
-        function draw() {
-            ctx.fillStyle = "#222";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "#ff477e";
-            ctx.fillRect(food.x, food.y, boxSize, boxSize);
-
-            ctx.fillStyle = "#00ff88";
-            snake.forEach((segment, index) => {
-                ctx.beginPath();
-                ctx.arc(segment.x + boxSize / 2, segment.y + boxSize / 2, boxSize / 2 - 2, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
-
-        function gameLoop() {
-            update();
-            draw();
-        }
-
-        function resetGame() {
-            snake = [{ x: 200, y: 200 }];
-            direction = { x: 0, y: 0 };
-            score = 0;
-            scoreDisplay.textContent = score;
-            placeFood();
-        }
-
-        document.addEventListener("keydown", (event) => {
-            const keyMap = {
-                "ArrowUp": { x: 0, y: -boxSize },
-                "ArrowDown": { x: 0, y: boxSize },
-                "ArrowLeft": { x: -boxSize, y: 0 },
-                "ArrowRight": { x: boxSize, y: 0 },
-                "w": { x: 0, y: -boxSize },
-                "s": { x: 0, y: boxSize },
-                "a": { x: -boxSize, y: 0 },
-                "d": { x: boxSize, y: 0 }
-            };
-
-            if (keyMap[event.key] && 
-                !(direction.x === -keyMap[event.key].x && direction.y === -keyMap[event.key].y)) {
-                direction = keyMap[event.key];
-            }
-        });
-
-        resetButton.addEventListener("click", resetGame);
-
-        setInterval(gameLoop, 100);
-    </script>
 </body>
 </html>
