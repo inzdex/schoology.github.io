@@ -1,131 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Platformer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon-es/0.20.0/cannon-es.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-    </style>
-</head>
+<html>
+<head><title>Simple Game</title></head>
+
+<style>
+#score{
+background-color: white;
+height:50px;
+width:140px;
+top:10px;
+left:540px;
+font-size:30px;
+}
+#board{
+position:absolute;
+width:5000px;
+height:300px;
+}
+#background{
+position:absolute;
+width:700px;
+height:500px;
+}
+#ball{
+position:absolute;
+width:70px;
+height:70px;
+top: 410px;
+left: 300px;
+}
+#goalie{
+position:absolute;
+width:100px;
+top:200px;
+left:300px;
+}
+#rules{
+position:absolute;
+top:0px;
+left:730px;
+}
+</style>
+
 <body>
+<div id="board">
+<img id="background" src="img/background.jpg" />
+<img id="ball" src="img/ball.jpg"/>
+<img id="goalie" src="img/goalie.jpg"/>
+<div id="score" style="position:absolute;" >Score</div>
+</div>
+<div id="rules" style="position:absolute;" >
+
+<h1>Simple Shooter Game</h1>
+
+<p>On building this simple game I learnt more about how the programming languages HTML5, CSS and JavaScript worked. The rules are stated below<p>
+
+<ul>
+<li>jkdsgjs</li>
+<li>hfdja</li>
+<li>`jeatngdadv</li>
+</ul>
+
+<p>Have fun!!</p>
+
+
+<button onclick="shootLeft()" style="top:400px; left:100px;" type="leftButton">Shoot left</button>
+<button onclick="shootRight()" style="top:400px; left:200px;" type="rightButton">Shoot right</button>
+
+<div>
+<p id="gameover"></p>
+</div>
+</div>
+
 <script>
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+var ball = null;
+var x = 1;
+var score = 0;
+document.getElementById('score').innerHTML = '0';
+var animate;
+ball = document.getElementById('ball');
 
-    // Physics world
-    const world = new CANNON.World();
-    world.gravity.set(0, -9.8, 0);
+function shootLeft(){
+var ran = Math.random();
 
-    // Ground (Platform)
-    const groundMaterial = new CANNON.Material();
-    const groundBody = new CANNON.Body({
-        mass: 0,
-        shape: new CANNON.Box(new CANNON.Vec3(5, 0.2, 5)),
-        material: groundMaterial
-    });
-    groundBody.position.set(0, -1, 0);
-    world.addBody(groundBody);
+while(parseInt(ball.style.top) != 300){
+ball.style.left = parseInt(ball.style.left) - 1 + 'px';
+ball.style.top = parseInt(ball.style.top) - 1 + 'px';
+animate = setTimeout(shootLeft,20);
+}
+if(ran<0.3){
+score = score + 1;
+document.getElementById('score').innerHTML = score;
+}
+else{
+document.getElementById('score').innerHTML = score;
+}
+x++;
+if(x==10){
+document.getElementById('gameover').innerHTML = "Game over! You got a score of " + score;
+}
+ball.style.left = '300px';
+ball.style.top = '410px';
+}
 
-    const groundMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(10, 0.4, 10),
-        new THREE.MeshStandardMaterial({ color: 0x228B22 })
-    );
-    groundMesh.position.copy(groundBody.position);
-    scene.add(groundMesh);
+function shootRight(){
+van ran = Math.random();
 
-    // Floating platforms
-    const platforms = [];
-    for (let i = 0; i < 5; i++) {
-        const platformBody = new CANNON.Body({
-            mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(2, 0.2, 2))
-        });
-        platformBody.position.set(Math.random() * 6 - 3, i * 2, Math.random() * 6 - 3);
-        world.addBody(platformBody);
+while(parseInt(ball.style.top != 300){
+ball.style.left = parseInt(ball.style.left) + 1 + 'px';
+ball.style.top = parseInt(ball.style.top) - 1 + 'px';
+animate = setTimeout(shootRight,20);
+}
+if(ran>0.7){
+score = score + 1;
+document.getElementById('score').innerHTML = score;
+}
+else{
+document.getElementById('score').innerHTML = score;
+}
+x++;
+if(x==10){
+document.getElementById('gameover').innerHTML = "Game over! You got a score of " + score;
+}
+ball.style.left = '300px';
+ball.style.top = '410px';
+}
 
-        const platformMesh = new THREE.Mesh(
-            new THREE.BoxGeometry(4, 0.4, 4),
-            new THREE.MeshStandardMaterial({ color: 0x8B4513 })
-        );
-        platformMesh.position.copy(platformBody.position);
-        scene.add(platformMesh);
-        platforms.push({ body: platformBody, mesh: platformMesh });
-    }
+}
 
-    // Player (Cube)
-    const playerMaterial = new CANNON.Material();
-    const playerBody = new CANNON.Body({
-        mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
-        material: playerMaterial
-    });
-    playerBody.position.set(0, 2, 0);
-    world.addBody(playerBody);
 
-    const playerMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshStandardMaterial({ color: 0xff0000 })
-    );
-    scene.add(playerMesh);
-
-    // Lights
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5);
-    scene.add(light);
-
-    // Controls
-    const keys = { w: false, a: false, s: false, d: false, space: false };
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "w") keys.w = true;
-        if (event.key === "a") keys.a = true;
-        if (event.key === "s") keys.s = true;
-        if (event.key === "d") keys.d = true;
-        if (event.key === " ") keys.space = true;
-    });
-
-    document.addEventListener("keyup", (event) => {
-        if (event.key === "w") keys.w = false;
-        if (event.key === "a") keys.a = false;
-        if (event.key === "s") keys.s = false;
-        if (event.key === "d") keys.d = false;
-        if (event.key === " ") keys.space = false;
-    });
-
-    // Game loop
-    function animate() {
-        requestAnimationFrame(animate);
-
-        world.step(1 / 60);
-
-        // Player controls
-        const moveSpeed = 2;
-        if (keys.w) playerBody.velocity.z -= moveSpeed;
-        if (keys.s) playerBody.velocity.z += moveSpeed;
-        if (keys.a) playerBody.velocity.x -= moveSpeed;
-        if (keys.d) playerBody.velocity.x += moveSpeed;
-        if (keys.space && Math.abs(playerBody.velocity.y) < 0.1) playerBody.velocity.y = 5;
-
-        // Sync player mesh with physics
-        playerMesh.position.copy(playerBody.position);
-
-        // Update platforms
-        platforms.forEach(({ body, mesh }) => mesh.position.copy(body.position));
-
-        camera.position.set(playerBody.position.x, playerBody.position.y + 2, playerBody.position.z + 5);
-        camera.lookAt(playerMesh.position);
-
-        renderer.render(scene, camera);
-    }
-
-    animate();
 </script>
+
 </body>
+
+
 </html>
