@@ -3,107 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purple Themed Website</title>
+    <title>Simple 3D Platformer Layout</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f8f8f8; /* Light background for contrast */
-            color: #333; /* Dark text for readability */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #87CEEB; /* Sky blue */
         }
 
-        header {
-            background-color: #6a0dad; /* Purple header */
-            color: white; 
-            padding: 20px;
-            text-align: center;
-        }
-
-        nav {
-            background-color: #836fff; /* Lighter purple for navigation */
-            padding: 15px;
-        }
-
-        nav a {
-            color: white; 
-            text-decoration: none; 
-            margin: 0 15px;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            text-decoration: underline; /* Underline on hover */
-        }
-
-        main {
-            padding: 20px;
-            max-width: 900px; /* Constraints on width for better readability */
-            margin: auto; /* Centers the main content */
-            background-color: white; /* White background for the main content */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-        }
-
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #6a0dad; /* Same color as header */
-            color: white; 
+        .game-area {
             position: relative;
-            bottom: 0;
-            width: 100%;
+            width: 600px;
+            height: 400px;
+            border: 2px solid #000; /* Game area border */
+            overflow: hidden; /* Prevent overflow */
+            perspective: 1000px; /* Create 3D effect */
         }
 
-        @media (max-width: 600px) {
-            nav {
-                flex-direction: column; /* Vertical on mobile */
-            }
-            nav a {
-                margin: 10px 0; /* Space out links vertically */
-            }
+        .platform {
+            position: absolute;
+            bottom: 50px; /* Positioning from the bottom */
+            width: 200px;
+            height: 20px;
+            background-color: #8B4513; /* Brown color for platforms */
+        }
+
+        .player {
+            position: absolute;
+            bottom: 70px; /* Height over the platform */
+            left: 50px; /* Initial position */
+            width: 40px;
+            height: 40px;
+            background-color: #ff0000; /* Red player */
+            border-radius: 50%; /* Circular shape */
+        }
+
+        /* Platforms at different heights */
+        .platform1 {
+            left: 0px; /* Left platform */
+        }
+        
+        .platform2 {
+            left: 300px; /* Right platform */
+            bottom: 100px; /* Higher platform */
+        }
+
+        .platform3 {
+            left: 150px; /* Center platform */
+            bottom: 150px; /* Even higher platform */
         }
     </style>
 </head>
 <body>
-
-<header>
-    <h1>Welcome to My Purple Website</h1>
-    <p>Your go-to hub for all things programming and design.</p>
-</header>
-
-<nav>
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-</nav>
-
-<main>
-    <section id="home">
-        <h2>Home</h2>
-        <p>This is a modern-designed homepage with a focus on a clean user experience.</p>
-    </section>
-
-    <section id="about">
-        <h2>About Us</h2>
-        <p>We are committed to delivering high-quality content and services.</p>
-    </section>
-
-    <section id="services">
-        <h2>Our Services</h2>
-        <p>Explore our range of services designed to meet your needs.</p>
-    </section>
-
-    <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Get in touch with us for any inquiries or support.</p>
-    </section>
-</main>
-
-<footer>
-    <p>&copy; 2023 Purple Themed Website. All Rights Reserved.</p>
-</footer>
-
+    <div class="game-area">
+        <div class="platform platform1"></div>
+        <div class="platform platform2"></div>
+        <div class="platform platform3"></div>
+        <div class="player"></div>
+    </div>
 </body>
 </html>
