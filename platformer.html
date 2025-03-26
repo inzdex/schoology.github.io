@@ -25,15 +25,15 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Add a simple platform
+        // Add a green platform
         const geometry = new THREE.BoxGeometry(5, 0.1, 5);
         const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
         const platform = new THREE.Mesh(geometry, material);
         platform.position.y = -0.5; // Position it slightly below the origin
         scene.add(platform);
 
-        // Create player (cube)
-        const playerGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        // Create a player (cube)
+        const playerGeometry = new THREE.BoxGeometry(0.5, 1, 0.5);
         const playerMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
         const player = new THREE.Mesh(playerGeometry, playerMaterial);
         scene.add(player);
@@ -43,17 +43,16 @@
         scene.add(ambientLight);
 
         // Create a directional light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 5, 5).normalize();
         scene.add(directionalLight);
 
         // Set camera position
-        camera.position.z = 5;
-        camera.position.y = 1;
+        camera.position.set(0, 1, 5); // Set camera behind the player
 
         // Variables
         let velocity = new THREE.Vector3();
-        const gravity = -9.8;
+        const gravity = -0.1;
         let canJump = false;
 
         // Raycaster for ground detection
@@ -67,33 +66,35 @@
             controls.lock();
         });
 
+        // Add an animation loop
         function update() {
-            // Apply gravity
-            velocity.y += gravity * 0.01; // Sample time
-            player.position.y += velocity.y * 0.01; // Sample time
+            // Handle gravity
+            velocity.y += gravity;
+            player.position.y += velocity.y;
 
-            // Check if the player is on the platform
-            raycaster.set(player.position.clone().add(new THREE.Vector3(0, -0.25, 0)), new THREE.Vector3(0, -1, 0));
+            // Raycasting to detect if the player is on the platform
+            const rayOrigin = player.position.clone().add(new THREE.Vector3(0, -0.5, 0));
+            raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
             const intersects = raycaster.intersectObject(platform);
 
             if (intersects.length > 0) {
-                canJump = true;
-                player.position.y = platform.position.y + 0.5; // Place on top of the platform
+                canJump = true; // Player can jump again
+                player.position.y = platform.position.y + 0.5; // Snap player to the top of the platform
                 velocity.y = 0; // Reset vertical velocity
             }
 
-            // Handle player movement
+            // Player movement controls
             const keys = {};
             window.addEventListener('keydown', event => keys[event.code] = true);
             window.addEventListener('keyup', event => keys[event.code] = false);
 
             if (keys['ArrowLeft']) player.position.x -= 0.1;
             if (keys['ArrowRight']) player.position.x += 0.1;
-            if (keys['ArrowUp']) player.position.z -= 0.1;
-            if (keys['ArrowDown']) player.position.z += 0.1;
+            if (keys['ArrowUp']) player.position.z -= 0.1; // Move forward
+            if (keys['ArrowDown']) player.position.z += 0.1; // Move backward
             if (keys['Space'] && canJump) {
-                velocity.y = 5; // Jump force
-                canJump = false; // Prevent multiple jumps
+                velocity.y = 2; // Jump force
+                canJump = false; // Restrict jumping until landing again
             }
         }
 
@@ -104,6 +105,16 @@
         }
 
         animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
     </script>
 </body>
 </html>
