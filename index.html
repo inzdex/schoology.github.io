@@ -1,120 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple 3D Platformer</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden; /* Hides scrollbars */
-        }
-        canvas {
-            display: block; /* Removes padding/margin */
-        }
-    </style>
-</head>
-<body>
-    <script src="https://threejs.org/build/three.js"></script>
-    <script src="https://threejs.org/examples/js/controls/PointerLockControls.js"></script>
 
-    <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+  <head>
+    <link rel="stylesheet" href="bp.css">
+    <script src="bp.js"></script>
+  </head>
 
-        // Add a green platform
-        const geometry = new THREE.BoxGeometry(5, 0.1, 5);
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-        const platform = new THREE.Mesh(geometry, material);
-        platform.position.y = -0.5; // Position it slightly below the origin
-        scene.add(platform);
+  <body>
 
-        // Create a player (cube)
-        const playerGeometry = new THREE.BoxGeometry(0.5, 1, 0.5);
-        const playerMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-        const player = new THREE.Mesh(playerGeometry, playerMaterial);
-        scene.add(player);
+    <div>
+      <h1>Simple Platformer</h1>
+      <p>Use the arrow keys and your platforming skills to reach the blue diamond.</p>
+    </div>
 
-        // Create ambient light
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
+    <canvas id="canvas"> 
+      <img id="image" src="https://m1.behance.net/rendition/modules/74723571/disp/0beedf48c9a000c812866297384c0cf4.png" style="display: none">
+    </canvas>
 
-        // Create a directional light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 5, 5).normalize();
-        scene.add(directionalLight);
+    <script src="bp.js"></script>
 
-        // Set camera position
-        camera.position.set(0, 1, 5); // Set camera behind the player
-
-        // Variables
-        let velocity = new THREE.Vector3();
-        const gravity = -0.1;
-        let canJump = false;
-
-        // Raycaster for ground detection
-        const raycaster = new THREE.Raycaster(player.position, new THREE.Vector3(0, -1, 0));
-
-        // Pointer Lock for player movement
-        const controls = new THREE.PointerLockControls(camera, document.body);
-        document.body.appendChild(controls.getElement());
-
-        document.addEventListener('click', () => {
-            controls.lock();
-        });
-
-        // Add an animation loop
-        function update() {
-            // Handle gravity
-            velocity.y += gravity;
-            player.position.y += velocity.y;
-
-            // Raycasting to detect if the player is on the platform
-            const rayOrigin = player.position.clone().add(new THREE.Vector3(0, -0.5, 0));
-            raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
-            const intersects = raycaster.intersectObject(platform);
-
-            if (intersects.length > 0) {
-                canJump = true; // Player can jump again
-                player.position.y = platform.position.y + 0.5; // Snap player to the top of the platform
-                velocity.y = 0; // Reset vertical velocity
-            }
-
-            // Player movement controls
-            const keys = {};
-            window.addEventListener('keydown', event => keys[event.code] = true);
-            window.addEventListener('keyup', event => keys[event.code] = false);
-
-            if (keys['ArrowLeft']) player.position.x -= 0.1;
-            if (keys['ArrowRight']) player.position.x += 0.1;
-            if (keys['ArrowUp']) player.position.z -= 0.1; // Move forward
-            if (keys['ArrowDown']) player.position.z += 0.1; // Move backward
-            if (keys['Space'] && canJump) {
-                velocity.y = 2; // Jump force
-                canJump = false; // Restrict jumping until landing again
-            }
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            update();
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        });
-    </script>
-</body>
-</html>
+  </body>
