@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Browser</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #333;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        iframe {
+            flex: 1; /* Take up the remaining space */
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://www.example.com)">
+        <button onclick="loadURL()">Go</button>
+    </header>
+    <iframe id="iframe" src="https://www.example.com"></iframe>
+
+    <script>
+        function loadURL() {
+            const urlInput = document.getElementById('urlInput');
+            const iframe = document.getElementById('iframe');
+            const url = urlInput.value;
+
+            // Add "http://" if not present
+            if (!/^https?:\/\//i.test(url)) {
+                iframe.src = 'http://' + url;
+            } else {
+                iframe.src = url;
+            }
+        }
+    </script>
+</body>
+</html>
