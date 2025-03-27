@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Platformer Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Hides scrollbars */
+        }
+        canvas {
+            display: block; /* Removes padding/margin */
+        }
+    </style>
+</head>
+<body>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/controls/PointerLockControls.js"></script>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add a simple platform
+        const geometry = new THREE.BoxGeometry(5, 0.1, 5);
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+        const platform = new THREE.Mesh(geometry, material);
+        platform.position.y = -0.5; // Position it slightly below the origin
+        scene.add(platform);
+
+        // Create player (cube)
+        const playerGeometry = new THREE.BoxGeometry(0.5, 1, 0.5);
+        const playerMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const player = new THREE.Mesh(playerGeometry, playerMaterial);
+        scene.add(player);
+
+        // Create ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        // Create a directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        // Set camera position
+        camera.position.z = 5;
+        camera.position.y = 1;
+
+        // Variables
+        let velocity = new THREE.Vector3();
+        const gravity = -9.8;
+        let canJump = false;
+
+        // Raycaster for ground detection
+        const raycaster = new THREE.Raycaster(player.position, new THREE.Vector3(0, -1, 0));
+
+        // Pointer Lock for player movement
+        const controls = new THREE.PointerLockControls(camera, document.body);
+        document.body.appendChild(controls.getElement());
+
+        document.addEventListener('click', () => {
+            controls.lock();
+        });
+
+        function update() {
+            // Apply gravity
+            velocity.y += gravity * 0.01; // Sample time
+            player.position.y += velocity.y * 0.01; // Sample time
+
+            // Check if the player is on the platform
+            raycaster.set(player.position.clone().add(new THREE.Vector3(0, -0.25, 0)), new THREE.Vector3(0, -1, 0));
+            const intersects = raycaster.intersectObject(platform);
+
+            if (intersects.length > 0) {
+                canJump = true;
+                player.position.y = platform.position.y + 0.5; // Place on top of the platform
+                velocity.y = 0; // Reset vertical velocity
+            }
+
+            // Handle player movement
+            const keys = {};
+            window.addEventListener('keydown', event => keys[event.code] = true);
+            window.addEventListener('keyup', event => keys[event.code] = false);
+
+            if (keys['ArrowLeft']) player.position.x -= 0.1;
+            if (keys['ArrowRight']) player.position.x += 0.1;
+            if (keys['ArrowUp']) player.position.z -= 0.1;
+            if (keys['ArrowDown']) player.position.z += 0.1;
+            if (keys['Space'] && canJump) {
+                velocity.y = 5; // Jump force
+                canJump = false; // Prevent multiple jumps
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
