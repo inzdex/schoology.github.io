@@ -64,6 +64,7 @@
             background: rgba(0, 0, 0, 0.7);
             border-radius: 8px;
             transition: transform 0.3s ease;
+            cursor: pointer; /* Change cursor to pointer */
         }
 
         section:hover {
@@ -88,10 +89,11 @@
     </header>
 
     <main>
-        <section id="home">
-            <h2>game's</h2>
+        <section id="home" onclick="window.location.href='snake.html'">
+            <h2>Games</h2>
             <p>Click Me</p>
         </section>
+    </main>
 
     <footer>
         <p>&copy; 2025 OptIT. All rights reserved.</p>
