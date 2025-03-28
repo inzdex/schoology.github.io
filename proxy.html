@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proxy Browser</title>
+    <title>Emulated Browser</title>
     <style>
         body {
             display: flex;
@@ -16,26 +16,28 @@
 
         header {
             display: flex;
-            justify-content: space-between;
             padding: 10px;
             background-color: #333;
+            align-items: center;
         }
 
         input[type="text"] {
-            width: 80%;
+            width: 75%;
             padding: 10px;
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            margin-right: 10px;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             background-color: #007bff;
             border: none;
             border-radius: 5px;
             color: white;
             cursor: pointer;
+            margin-right: 5px;
         }
 
         button:hover {
@@ -50,15 +52,22 @@
 </head>
 <body>
     <header>
+        <button onclick="goBack()">Back</button>
+        <button onclick="goForward()">Forward</button>
         <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://www.example.com)">
         <button onclick="loadURL()">Go</button>
     </header>
     <iframe id="iframe" src="https://www.example.com"></iframe>
 
     <script>
+        const iframe = document.getElementById('iframe');
+        const urlInput = document.getElementById('urlInput');
+
+        // To keep track of browser history
+        let historyStack = [];
+        let historyIndex = -1;
+
         function loadURL() {
-            const urlInput = document.getElementById('urlInput');
-            const iframe = document.getElementById('iframe');
             const url = urlInput.value;
 
             // Add "http://" if not present
@@ -67,7 +76,43 @@
             } else {
                 iframe.src = url;
             }
+
+            // Update history
+            updateHistory(iframe.src);
         }
+
+        function updateHistory(url) {
+            // Clear forward history if navigating to a new URL
+            if (historyIndex < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, historyIndex + 1);
+            }
+
+            // Add new URL to history
+            historyStack.push(url);
+            historyIndex++;
+            urlInput.value = url; // Update input box with the current URL
+        }
+
+        function goBack() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                iframe.src = historyStack[historyIndex];
+                urlInput.value = historyStack[historyIndex]; // Update input box with the current URL
+            }
+        }
+
+        function goForward() {
+            if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                iframe.src = historyStack[historyIndex];
+                urlInput.value = historyStack[historyIndex]; // Update input box with the current URL
+            }
+        }
+
+        // Load the initial URL into the iframe and history
+        window.onload = function() {
+            loadURL();
+        };
     </script>
 </body>
 </html>
