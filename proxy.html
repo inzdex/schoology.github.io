@@ -1,118 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulated Browser</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            background-color: #282c34;
-            color: white;
-        }
+</iframe>
 
-        header {
-            display: flex;
-            padding: 10px;
-            background-color: #333;
-            align-items: center;
-        }
 
-        input[type="text"] {
-            width: 75%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-right: 10px;
-        }
+<html>
 
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            margin-right: 5px;
-        }
+<head></head>
 
-        button:hover {
-            background-color: #0056b3;
-        }
+<body style="overflow: hidden; cursor: auto;cursor: auto;color:rgb(204, 204, 204);margin:0px;padding:0px;border:0px none rgb(204, 204, 204);">
 
-        iframe {
-            flex: 1; /* Take up the remaining space */
-            border: none;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <button onclick="goBack()">Back</button>
-        <button onclick="goForward()">Forward</button>
-        <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://www.example.com)">
-        <button onclick="loadURL()">Go</button>
-    </header>
-    <iframe id="iframe" src="https://scrapethissite.com"></iframe>
 
-    <script>
-        const iframe = document.getElementById('iframe');
-        const urlInput = document.getElementById('urlInput');
 
-        // To keep track of browser history
-        let historyStack = [];
-        let historyIndex = -1;
 
-        function loadURL() {
-            const url = urlInput.value;
 
-            // Add "http://" if not present
-            if (!/^https?:\/\//i.test(url)) {
-                iframe.src = 'http://' + url;
-            } else {
-                iframe.src = url;
-            }
-
-            // Update history
-            updateHistory(iframe.src);
-        }
-
-        function updateHistory(url) {
-            // Clear forward history if navigating to a new URL
-            if (historyIndex < historyStack.length - 1) {
-                historyStack = historyStack.slice(0, historyIndex + 1);
-            }
-
-            // Add new URL to history
-            historyStack.push(url);
-            historyIndex++;
-            urlInput.value = url; // Update input box with the current URL
-        }
-
-        function goBack() {
-            if (historyIndex > 0) {
-                historyIndex--;
-                iframe.src = historyStack[historyIndex];
-                urlInput.value = historyStack[historyIndex]; // Update input box with the current URL
-            }
-        }
-
-        function goForward() {
-            if (historyIndex < historyStack.length - 1) {
-                historyIndex++;
-                iframe.src = historyStack[historyIndex];
-                urlInput.value = historyStack[historyIndex]; // Update input box with the current URL
-            }
-        }
-
-        // Load the initial URL into the iframe and history
-        window.onload = function() {
-            loadURL();
-        };
-    </script>
+    <div style="padding-top: 20px; position: absolute; height: 761px;position:absolute;height:761px;margin:0px;border:0px none rgb(204, 204, 204);">
+        <canvas width="1366" height="633" style="position: absolute; left: 0px; top: 0px; width: 1366px; height: 633px;left:0px;top:0px;width: 1366px;height:633px;margin:0px;padding:0px;border:0px none rgb(204, 204, 204);">
+            <p>Your browser doesn't support HTML5 canvas.</p>
+        </canvas>
+    </div> <!-- Run the game code -->
+    <div style="width: 100%; text-align: center; position: absolute; top: 0px; z-index: 999; background: rgb(119, 119, 255); opacity: 0.8;text-align:center;position:absolute;top:0px;z-index:999;background:rgb(119, 119, 255) none repeat scroll 0% 0% / auto padding-box border-box;opacity:0.8;">
+        <ul style="color: #ffffff; padding: 0px; margin: 0px; font-size: 20px;padding:0px;margin:0px;font-size:20px;">
+            <li style="padding: 5px; display: inline-block;display:inline-block;">
+                <a style="color: #ffffff;" href="https://webglmath.github.io/" title="Unblocked Games">Unblocked Games</a>
+            </li>
+            <li style="padding: 5px; display: inline-block; float: right;display:block;float:right;">
+                <a onclick="return closeBacklinks();" style="color: #ffffff; text-decoration: none;text-decoration:none solid rgb(255, 255, 255);">❌</a>
+            </li>
+        </ul>
+    </div>
 </body>
+
 </html>
